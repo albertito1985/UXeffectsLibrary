@@ -6,30 +6,20 @@ type ZoomProps = {
     children?: React.ReactNode, // The content to be displayed inside the Zoom component
     entireImage:string, // URL or path to the image wiuthout transparency
     holeImage:string, // URL or path to the image with transparency
-    maxZoomValue?:number |undefined;
+    maxZoom?:number |undefined;
+    zoomScrollPath?:number;
 }
 
-export default function Zoom({children, entireImage, holeImage, maxZoomValue = 1500}: ZoomProps) {
+export default function Zoom({children, entireImage, holeImage, maxZoom = 1500, zoomScrollPath = 1000}: ZoomProps) {
     const [zoomState, setZoomState] = useState({
-        /* sectionNumber: undefined, */
-         /* scrollDirection: "down", */
-        scrollPosition: 0,
-        vh: window.innerHeight
+        scrollPosition: 0
     })
-
-    /*as it is configured you can conly choose a total of 8 sections*/
-    const sectionsCofee: number = 5; //The value of the scroll distance until disappering in sections of 100vh each /*TODO: check name and make the value dynamic */
-    const sectionsContent: number = 8;/*TODO: check name and make the value dynamic */
 
     /*Adjustments */
     const startZoom = useRef<number | undefined>(undefined);
     
-    const maxZoom : number = maxZoomValue;
-    const vh: number = window.innerHeight;
-    
     /*Variables*/
     let sectionNumber : number | undefined = startZoom.current;
-    let zoomedImagePath : number | undefined = sectionsCofee*(vh/2); //the total path of the zoomed image until disappering in pixels
     const intervalZoom = useRef<number | undefined>(undefined);
     const zoomContainerPosition = useRef<number>(0);
 
@@ -42,10 +32,8 @@ export default function Zoom({children, entireImage, holeImage, maxZoomValue = 1
       entireImageDiv.style.backgroundImage = `url(${entireImage})`;
 
         const handleScroll = () => {
-            const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-            /* const direction = y > 0 ? "down" : "up"; */ //TODO: check the function of direction
-            /* setZoomState(prev => ({ ...prev, scrollPosition: y, scrollDirection: direction })) */
-            setZoomState(prev => ({ ...prev, scrollPosition: y}))
+          const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+          setZoomState(prev => ({ ...prev, scrollPosition: y}))
         }
         // initialize
         handleScroll()
@@ -53,14 +41,9 @@ export default function Zoom({children, entireImage, holeImage, maxZoomValue = 1
         window.addEventListener('scroll', handleScroll, { passive: true })
 
         //other functions
-        /* chagne name to coffeePath */
-
-
         let zoomContainer : HTMLElement = document.getElementById("zoomContainer") as HTMLElement; 
         zoomContainerPosition.current = zoomContainer.getBoundingClientRect().y+window.scrollY;
-
-
-
+        
         let p : Promise<number> = new Promise<number>((resolve, reject) => {
           getStartZoom(resolve)
         })
@@ -68,12 +51,12 @@ export default function Zoom({children, entireImage, holeImage, maxZoomValue = 1
           startZoom.current = percentage;
           intervalZoom.current = maxZoom - (startZoom.current || 0);
         })
+
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
     useEffect(()=>{
         cofeeAnimation();
-        /* sectionsTrigger(zoomState.scrollPosition); */
     })
 
     // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
@@ -126,21 +109,8 @@ export default function Zoom({children, entireImage, holeImage, maxZoomValue = 1
       }
     }
 
-    ///////////////////////////////////////////////////////Aquí me quedé
-
-    const sectionsTrigger = (scrollPosition : number)=>{
-      sectionNumber= calculateSection(scrollPosition);
-    }
-
-    const calculateSection = (scrollPosition:number)=>{
-      let actualSection = (Math.floor((scrollPosition-(zoomContainerPosition.current || 0))/(vh/2))); // look after (coffePosition || 0) could be wrong
-      let startSection = sectionsCofee-1;
-      let validatedSection = ((actualSection-startSection)>-1 && (actualSection-startSection)<sectionsContent+1)?actualSection-startSection:undefined;
-      return validatedSection;
-    }
-
     const calculateScrollPercentage = ()=>{
-      return ((zoomState.scrollPosition-(zoomContainerPosition.current || 0))*100)/((zoomedImagePath || 0)-(vh/2)); // look after (coffePosition || 0) and (cofeePath || 0) could be wrong
+      return ((zoomState.scrollPosition-zoomContainerPosition.current)*100)/(zoomScrollPath); // look after (coffePosition || 0) and (cofeePath || 0) could be wrong
     }
 
     const cofeeAnimation = ()=>{
