@@ -1,73 +1,90 @@
 'use client'
-import {useState, useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import './zoom.css';
+import ScrollHijack from './scrollHijack';
 
 type ZoomProps = {
     children?: React.ReactNode, // The content to be displayed inside the Zoom component
     entireImage:string, // URL or path to the image wiuthout transparency
-    holeImage:string, // URL or path to the image with transparency
-    maxZoom?:number |undefined;
-    zoomScrollPath?:number;
+    maskImage?:string, // URL or path to the image with transparency
+    magnification?:number; // Magnification factor for the zoom effect
+    zoomScrollPath?:number; // the scroll distance over which the zoom effect occurs
+    hijackContainerHeight?:string; // height of the scroll hijack container
 }
 
-export default function Zoom({children, entireImage, holeImage, maxZoom = 1500, zoomScrollPath = 1000}: ZoomProps) {
-    const [zoomState, setZoomState] = useState({
-        scrollPosition: 0
-    })
-
-    /*Adjustments */
+export default function Zoom({children, entireImage, maskImage, magnification = 20, zoomScrollPath = 500, hijackContainerHeight}: ZoomProps) {
+    const scrollPosition = useRef<number>(0);
+    /* Configuration */
     const startZoom = useRef<number | undefined>(undefined);
-    
-    /*Variables*/
-    let sectionNumber : number | undefined = startZoom.current;
+    const maxZoom = useRef<number | undefined>(undefined);
+
+    /* Variables */
     const intervalZoom = useRef<number | undefined>(undefined);
-    const zoomContainerPosition = useRef<number>(0);
+    const hijackContainerPosition = useRef<number>(0);
 
     /* Track window scroll position */
     useEffect(() => {
-      // Adding the images to the backgound of the divs dynamically for the Zoom effect
-      let holeImageDiv = document.getElementById("holeImage") as HTMLElement;
+      // Adding the images to the background of the divs dynamically for the Zoom effect
+      let maskImageDiv = document.getElementById("maskImage") as HTMLElement;
       let entireImageDiv = document.getElementById("entireImage") as HTMLElement;
-      holeImageDiv.style.backgroundImage = `url(${holeImage})`;
+      maskImageDiv.style.backgroundImage = `url(${maskImage})`;
       entireImageDiv.style.backgroundImage = `url(${entireImage})`;
 
-        const handleScroll = () => {
-          const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-          setZoomState(prev => ({ ...prev, scrollPosition: y}))
+      let hijackContainer : HTMLElement = document.getElementById("hijackContainer") as HTMLElement; 
+      hijackContainerPosition.current = hijackContainer.getBoundingClientRect().y+window.scrollY;
+      
+      let p = new Promise<number>((resolve) => {
+        getStartZoom(resolve)
+      })
+      p.then((percentage) => {
+        startZoom.current = percentage;
+        maxZoom.current = percentage * magnification;
+        intervalZoom.current = maxZoom.current - (startZoom.current);
+        zoomAnimation();
+      });
+
+      // Intersection Observer to track scroll position
+      const handleScroll = () => {
+        const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        scrollPosition.current = y;
+        if(y>=hijackContainerPosition.current && y<=(hijackContainerPosition.current+zoomScrollPath)){
+          zoomAnimation();};
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Start listening to scroll when container is in view
+              window.addEventListener("scroll", handleScroll, { passive: true });
+            } else {
+              // Stop listening when container is out of view
+              window.removeEventListener("scroll", handleScroll);
+            }
+          });
+        },
+        {
+          threshold: 0
         }
-        // initialize
-        handleScroll()
-        //event listeners
-        window.addEventListener('scroll', handleScroll, { passive: true })
+      );
+      let zoomImages= document.getElementById("hijackContainer") as HTMLElement;
+      observer.observe(zoomImages);
 
-        //other functions
-        let zoomContainer : HTMLElement = document.getElementById("zoomContainer") as HTMLElement; 
-        zoomContainerPosition.current = zoomContainer.getBoundingClientRect().y+window.scrollY;
-        
-        let p : Promise<number> = new Promise<number>((resolve, reject) => {
-          getStartZoom(resolve)
-        })
-        p.then((percentage) => {
-          startZoom.current = percentage;
-          intervalZoom.current = maxZoom - (startZoom.current || 0);
-        })
-
-        return () => window.removeEventListener('scroll', handleScroll)
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("scroll", handleScroll);
+      };
     }, [])
 
-    useEffect(()=>{
-        cofeeAnimation();
-    })
-
     // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
-    const getStartZoom = (resolve: (value: number) => void) => {
+    const getStartZoom = async (resolve: (value: number) => void) => {
       let div : HTMLElement = document.getElementsByClassName("entireImage")[0] as HTMLElement;
       let style : CSSStyleDeclaration = window.getComputedStyle(div);
       let bg : string = style.backgroundImage.slice(5, -2);
       
       let background : HTMLImageElement = new Image();
       background.src = bg;
-      background.onload = calculateRatio;
+      background.onload = await calculateRatio;
       
         function calculateRatio(){
           let percentage : number | undefined = undefined;
@@ -110,28 +127,23 @@ export default function Zoom({children, entireImage, holeImage, maxZoom = 1500, 
     }
 
     const calculateScrollPercentage = ()=>{
-      return ((zoomState.scrollPosition-zoomContainerPosition.current)*100)/(zoomScrollPath); // look after (coffePosition || 0) and (cofeePath || 0) could be wrong
+      let percentage = ((scrollPosition.current-hijackContainerPosition.current)*100)/zoomScrollPath;
+      return percentage;
     }
 
-    const cofeeAnimation = ()=>{
-      /* calculating the container size in procent*/
+    const zoomAnimation = ()=>{
       let scrollPercentage : number = calculateScrollPercentage();
       let newZoom : number | undefined = calculateZoom(scrollPercentage);
       let newOpacity=(100-scrollPercentage)+"%";
-
-      if(sectionNumber===undefined){
-        newZoom = startZoom.current;
-        newOpacity = "100%";
-      }
-      updateCoffeeAnimation(newZoom,newOpacity);
+      updateZoomAnimation(newZoom,newOpacity);
     }
 
-    const updateCoffeeAnimation = (newZoom:number | undefined,newOpacity:string)=>{
-      let entireImage = document.getElementsByClassName("entireImage")[0] as HTMLElement;
-      let holeImage = document.getElementsByClassName("holeImage")[0] as HTMLElement;
+    const updateZoomAnimation = (newZoom:number | undefined,newOpacity:string)=>{
+      let entireImage = document.getElementById("entireImage") as HTMLElement;
+      let maskImage = document.getElementById("maskImage") as HTMLElement;
 
       /* Updating Zoom*/
-      holeImage.style.backgroundSize=newZoom+"%";
+      maskImage.style.backgroundSize=newZoom+"%";
       entireImage.style.backgroundSize=newZoom+"%";      
 
       /* Updating Opacity*/
@@ -139,23 +151,21 @@ export default function Zoom({children, entireImage, holeImage, maxZoom = 1500, 
     }
 
     const calculateZoom = (scrollPercentage : number)=>{
-      let newZoom = (((intervalZoom.current || 0)*scrollPercentage)/100) + (startZoom.current || 0); // check out  and (intervalZoom.current || 0) could be wrong
-      if(newZoom <= (startZoom.current || 0)){newZoom = startZoom.current || 0}; // check out (startZoom.current || 0) could be wrong
+      let newZoom = (((maxZoom.current || 0) * scrollPercentage)/100);
+      if(newZoom <= (startZoom.current || 0)){newZoom = startZoom.current || 0};
+      if(newZoom >= (maxZoom.current || 0)) {newZoom = maxZoom.current || 0};
       return newZoom;
     }
 
-
   return (
-    <div id="zoomContainer" className="zoomContainer">
-        <div className="zoomContent">
-            {children}{zoomState.scrollPosition}
-            <div className="zoomImages">
-              <div id="holeImage" className="holeImage">
+          <ScrollHijack height={hijackContainerHeight || undefined}>
+            <div id="zoomImages" className="zoomImages">
+              <div id="maskImage" className="maskImage">
               </div>
               <div id="entireImage" className="entireImage">
               </div>
-          </div>
-        </div>
-    </div>
+            </div>
+            {children}
+          </ScrollHijack>
   )
 }
