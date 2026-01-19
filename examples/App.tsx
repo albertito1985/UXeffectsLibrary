@@ -6,10 +6,10 @@ function App() {
     <>
     
     <div className="contentContainer"> Space for scrolling </div>
-      {/* <ScrollHijack scrollPath="150vh">
+      <ScrollHijack scrollPath="300vh" >
           <div className="hijackContentExample"> Scroll Hijack Content Example </div>
-      </ScrollHijack> */}
-      <Zoom entireImage={"./CoffeeEntire.png"} maskImage={"./CoffeeMask.png"} />
+      </ScrollHijack>
+      <Zoom entireImage={"./CoffeeEntire.png"} maskImage={"./CoffeeMask.png"} totalPath="500vh" magnificationPath="100vh"/>
     <div className="contentContainer"> Space for scrolling </div>
     </>
   )

@@ -10,11 +10,11 @@ type ZoomProps = {
     entireImage:string, // URL or path to the image wiuthout transparency
     maskImage?:string, // URL or path to the image with transparency
     magnification?:number; // Magnification factor for the zoom effect
-    scrollPath?:string; // the scroll distance over which the zoom effect occurs
-    hijackContainerHeight?:string; // height of the scroll hijack container
+    magnificationPath?:string; // the scroll distance over which the zoom effect occurs
+    totalPath?:string; // height of the scroll hijack container
 }
 
-export default function Zoom({entireImage, maskImage, magnification = 20, scrollPath = "50vh", hijackContainerHeight}: ZoomProps) {
+export default function Zoom({entireImage, maskImage, magnification = 20, magnificationPath = "50vh", totalPath}: ZoomProps) {
     const componentId = useRef<string>(`zoom-instance-${++instanceCounter}`).current;
     
     const scrollPosition = useRef<number>(0);
@@ -39,7 +39,7 @@ export default function Zoom({entireImage, maskImage, magnification = 20, scroll
       hijackContainerPosition.current = hijackContainer.getBoundingClientRect().y+window.scrollY;
 
       let container : HTMLElement = document.getElementById(`zoomImages-${componentId}`) as HTMLElement;
-      let scrollPathInPixels :string | undefined = evaluateCalc(scrollPath,{
+      let scrollPathInPixels :string | undefined = evaluateCalc(magnificationPath,{
             parentWidth: container.parentElement?.clientWidth,
             parentHeight: container.parentElement?.clientHeight,
             viewportWidth: window.innerWidth,
@@ -174,7 +174,7 @@ export default function Zoom({entireImage, maskImage, magnification = 20, scroll
     }
 
   return (
-          <ScrollHijack className={componentId} scrollPath={hijackContainerHeight || undefined}>
+          <ScrollHijack className={componentId} scrollPath={totalPath} >
               <div id={`zoomImages-${componentId}`} className="zoomImages">
                 <div id={`maskImage-${componentId}`} className="maskImage">
                 </div>

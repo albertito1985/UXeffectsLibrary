@@ -17,23 +17,11 @@ body {
   background-color:white;
 }
 
-.zoomContent{
-  height:300vh;
-  width:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background-color:black;
-  color:white
-}
-
 .hijackContentExample{
   height:100%;
   display:flex;
   justify-content:center;
   align-items:center;
-}
-
-.hijackContent{
   background-color:lightgray;
 }
+
