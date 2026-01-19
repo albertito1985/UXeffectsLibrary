@@ -18,11 +18,22 @@ body {
 }
 
 .zoomContent{
-  height:100vh;
+  height:300vh;
   width:100%;
   display:flex;
   justify-content:center;
   align-items:center;
   background-color:black;
   color:white
+}
+
+.hijackContentExample{
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.hijackContent{
+  background-color:lightgray;
 }

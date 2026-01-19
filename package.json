@@ -9,8 +9,7 @@
   "exports": {
     ".": {
       "require": "./dist/index.cjs",
-      "import": "./dist/index.es.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.es.js"
     },
     "./css": "./dist/style.css"
   },
@@ -29,9 +28,6 @@
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
-  },
-  "dependencies": {
-    "css-calc-transform": "^1.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
