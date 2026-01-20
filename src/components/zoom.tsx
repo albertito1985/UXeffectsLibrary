@@ -57,36 +57,16 @@ export default function Zoom({entireImage, maskImage, magnification = 20, magnif
         zoomAnimation();
       });
 
-      // Intersection Observer to track scroll position
+      // Track scroll position
       const handleScroll = () => {
         const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
         scrollPosition.current = y;
         zoomAnimation();
       };
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              // Start listening to scroll when container is in view
-              console.log("Start Listening")
-              window.addEventListener("scroll", handleScroll, { passive: true });
-            } else {
-              // Stop listening when container is out of view
-              console.log("Stop Listening")
-              window.removeEventListener("scroll", handleScroll);
-            }
-          });
-        },
-        {
-          threshold: 0
-        }
-      );
-      let zoomImages= document.getElementsByClassName(componentId)[0] as HTMLElement;
-      observer.observe(zoomImages);
+      window.addEventListener("scroll", handleScroll, { passive: true });
 
       return () => {
-        observer.disconnect();
         window.removeEventListener("scroll", handleScroll);
       };
     }, [])
