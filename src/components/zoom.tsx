@@ -30,6 +30,15 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
 
     /* Track window scroll position */
     useEffect(() => {
+      Setup();
+      window.addEventListener("scroll", handleScroll, { passive: true });
+
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }, []);
+
+    const Setup = () : void => {
       // Adding the images to the background of the divs dynamically for the Zoom effect
       let maskImageDiv = document.getElementById(`maskImage-${componentId}`) as HTMLElement;
       let entireImageDiv = document.getElementById(`entireImage-${componentId}`) as HTMLElement;
@@ -58,19 +67,14 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
         zoomAnimation();
       });
 
-      // Track scroll position
+    }
+
+    // Track scroll position
       const handleScroll = () => {
         const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
         scrollPosition.current = y;
         zoomAnimation();
       };
-
-      window.addEventListener("scroll", handleScroll, { passive: true });
-
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
-    }, [])
 
     // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
     const getStartZoom = async (resolve: (value: number) => void) => {

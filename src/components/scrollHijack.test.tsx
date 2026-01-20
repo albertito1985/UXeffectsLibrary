@@ -154,7 +154,7 @@ describe('ScrollHijack', () => {
     })
 
     it('should maintain proper parent-child relationships', () => {
-      const { container } = render(
+      render(
         <ScrollHijack>
           <div data-testid="parent">
             <div data-testid="child">Nested</div>

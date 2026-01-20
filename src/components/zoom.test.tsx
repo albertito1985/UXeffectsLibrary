@@ -48,7 +48,7 @@ describe('Zoom', () => {
     })
 
     // Mock Image constructor
-    global.Image = class {
+    globalThis.Image = class {
       onload: (() => void) | null = null
       src: string = ''
       width: number = 1920
