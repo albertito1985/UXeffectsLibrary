@@ -7,9 +7,11 @@ function App() {
     
     <div className="contentContainer"> Space for scrolling </div>
       <ScrollHijack scrollPath="300vh" >
-          <div className="hijackContentExample"> Scroll Hijack Content Example </div>
+        <div className="hijackContentExample"> Scroll Hijack Content Example </div>
       </ScrollHijack>
-      <Zoom entireImage={"./CoffeeEntire.png"} maskImage={"./CoffeeMask.png"} totalPath="500vh" magnificationPath="100vh"/>
+      <Zoom entireImage={"./CoffeeEntire.png"} maskImage={"./CoffeeMask.png"} totalPath="200vh" magnificationPath="100vh">
+        <div className="zoomContentExample"> Zoom Content Example </div>
+      </Zoom>
     <div className="contentContainer"> Space for scrolling </div>
     </>
   )

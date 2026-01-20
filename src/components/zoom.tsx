@@ -7,6 +7,7 @@ import { evaluateCalc } from '../utils/cssCalc';
 let instanceCounter = 0;
 
 type ZoomProps = {
+    children?: React.ReactNode;
     entireImage:string, // URL or path to the image wiuthout transparency
     maskImage?:string, // URL or path to the image with transparency
     magnification?:number; // Magnification factor for the zoom effect
@@ -14,7 +15,7 @@ type ZoomProps = {
     totalPath?:string; // height of the scroll hijack container
 }
 
-export default function Zoom({entireImage, maskImage, magnification = 20, magnificationPath = "50vh", totalPath}: ZoomProps) {
+export default function Zoom({children, entireImage, maskImage, magnification = 20, magnificationPath = "50vh", totalPath}: ZoomProps) {
     const componentId = useRef<string>(`zoom-instance-${++instanceCounter}`).current;
     
     const scrollPosition = useRef<number>(0);
@@ -161,6 +162,7 @@ export default function Zoom({entireImage, maskImage, magnification = 20, magnif
                 <div id={`entireImage-${componentId}`} className="entireImage">
                 </div>
               </div>
+              {children}
           </ScrollHijack>
   )
 }
