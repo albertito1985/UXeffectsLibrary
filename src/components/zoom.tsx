@@ -3,6 +3,8 @@ import {useEffect, useRef} from 'react'
 import './zoom.css';
 import ScrollHijack from './scrollHijack';
 import { evaluateCalc } from '../utils/cssCalc';
+import { useScroll } from './scrollContext';
+import useResizeObserver from '../hooks/useResizeObserver';
 
 let instanceCounter = 0;
 
@@ -17,8 +19,8 @@ type ZoomProps = {
 
 export default function Zoom({children, entireImage, maskImage, magnification = 20, magnificationPath = "50vh", totalPath}: ZoomProps) {
     const componentId = useRef<string>(`zoom-instance-${++instanceCounter}`).current;
-    
-    const scrollPosition = useRef<number>(0);
+
+    const scrollPosition : number = useScroll();
     /* Configuration */
     const startZoom = useRef<number | undefined>(undefined);
     const maxZoom = useRef<number | undefined>(undefined);
@@ -28,34 +30,33 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
     const hijackContainerPosition = useRef<number>(0);
     const zoomScrollPath = useRef<number | undefined>(undefined); // The scroll distance over which the zoom effect occurs
 
-    /* Track window scroll position */
+    /* Resize Observer */
+    const { observe, unobserve } = useResizeObserver(() => {
+        setContainerPositionAndScrollPath(); // Recalculate the position and scroll path on resize
+        zoomAnimation(); // Reapply zoom animation on resize
+    });
+
+    /* Initialize setup */
     useEffect(() => {
+      const hijackContainer = document.getElementsByClassName(componentId)[0] as HTMLElement;
+      observe(hijackContainer); // Start observing the container
       Setup();
-      window.addEventListener("scroll", handleScroll, { passive: true });
 
       return () => {
-        window.removeEventListener("scroll", handleScroll);
+        unobserve(); // Cleanup observer on unmount
       };
     }, []);
 
+    useEffect(() => {
+      zoomAnimation();
+    }, [scrollPosition]);
+
     const Setup = () : void => {
       // Adding the images to the background of the divs dynamically for the Zoom effect
-      let maskImageDiv = document.getElementById(`maskImage-${componentId}`) as HTMLElement;
-      let entireImageDiv = document.getElementById(`entireImage-${componentId}`) as HTMLElement;
-      maskImageDiv.style.backgroundImage = `url(${maskImage})`;
-      entireImageDiv.style.backgroundImage = `url(${entireImage})`;
+      loadImages();
 
-      let hijackContainer : HTMLElement = document.getElementsByClassName(componentId)[0] as HTMLElement;
-      hijackContainerPosition.current = hijackContainer.getBoundingClientRect().y+window.scrollY;
-
-      let container : HTMLElement = document.getElementById(`zoomImages-${componentId}`) as HTMLElement;
-      let scrollPathInPixels :string | undefined = evaluateCalc(magnificationPath,{
-            parentWidth: container.parentElement?.clientWidth,
-            parentHeight: container.parentElement?.clientHeight,
-            viewportWidth: window.innerWidth,
-            viewportHeight: window.innerHeight
-        }) || undefined;
-      zoomScrollPath.current = parseInt(scrollPathInPixels?.slice(0, -2) || "0"); // The scroll distance over which the zoom effect occurs
+      // Declaring the position of the container and the scrollPath for the zoom effect
+      setContainerPositionAndScrollPath();
       
       let p = new Promise<number>((resolve) => {
         getStartZoom(resolve)
@@ -69,12 +70,37 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
 
     }
 
+    const loadImages = ()=>{
+      let maskImageDiv = document.getElementById(`maskImage-${componentId}`) as HTMLElement;
+      let entireImageDiv = document.getElementById(`entireImage-${componentId}`) as HTMLElement;
+      maskImageDiv.style.backgroundImage = `url(${maskImage})`;
+      entireImageDiv.style.backgroundImage = `url(${entireImage})`;
+    }
+
+    const setContainerPositionAndScrollPath = ()=>{
+      let hijackContainer : HTMLElement = document.getElementsByClassName(componentId)[0] as HTMLElement;
+      hijackContainerPosition.current = hijackContainer.getBoundingClientRect().y+window.scrollY;
+
+      let container : HTMLElement = document.getElementById(`zoomImages-${componentId}`) as HTMLElement;
+      let scrollPathInPixels :string | undefined = evaluateCalc(magnificationPath,{
+            parentWidth: container.parentElement?.clientWidth,
+            parentHeight: container.parentElement?.clientHeight,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight
+        }) || undefined;
+      zoomScrollPath.current = parseInt(scrollPathInPixels?.slice(0, -2) || "0"); // The scroll distance over which the zoom effect occurs
+    }
+
+    
+
     // Track scroll position
-      const handleScroll = () => {
-        const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-        scrollPosition.current = y;
-        zoomAnimation();
-      };
+    const zoomAnimation = () => {
+        let scrollPercentage : number = calculateScrollPercentage();
+        let newZoom : number | undefined = calculateZoom(scrollPercentage);
+        let opacityValue = Math.max(0, Math.min(100, 100 - scrollPercentage));
+        let newOpacity = opacityValue + "%";
+        updateZoomAnimation(newZoom, newOpacity);
+    };
 
     // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
     const getStartZoom = async (resolve: (value: number) => void) => {
@@ -127,16 +153,8 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
     }
 
     const calculateScrollPercentage = ()=>{
-      let percentage = ((scrollPosition.current-hijackContainerPosition.current)*100)/zoomScrollPath.current!;
+      let percentage = ((scrollPosition-hijackContainerPosition.current)*100)/zoomScrollPath.current!;
       return percentage;
-    }
-
-    const zoomAnimation = ()=>{
-      let scrollPercentage : number = calculateScrollPercentage();
-      let newZoom : number | undefined = calculateZoom(scrollPercentage);
-      let opacityValue = Math.max(0, Math.min(100, 100 - scrollPercentage));
-      let newOpacity = opacityValue + "%";
-      updateZoomAnimation(newZoom,newOpacity);
     }
 
     const updateZoomAnimation = (newZoom:number | undefined,newOpacity:string)=>{
@@ -168,5 +186,5 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
               </div>
               {children}
           </ScrollHijack>
-  )
+    )
 }

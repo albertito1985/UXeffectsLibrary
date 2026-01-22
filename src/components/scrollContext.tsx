@@ -9,19 +9,13 @@ import type {ReactNode } from 'react';
 
 // ----- Types -----
 
-interface ScrollContextValue {
-  y: number;
-}
-
 interface ScrollProviderProps {
   children: ReactNode;
 }
 
 // ----- Context -----
 
-const ScrollContext = createContext<ScrollContextValue>({
-  y: 0
-});
+const ScrollContext = createContext<number>(0);
 
 // ----- Simple throttle helper -----
 
@@ -45,18 +39,17 @@ function throttle<T extends (...args: any[]) => void>(
 export const ScrollProvider: React.FC<ScrollProviderProps> = ({
   children,
 }) => {
-  const [pos, setPos] = useState<ScrollContextValue>({
-    y: 0
-  });
+  const [pos, setPos] = useState<number>(0);
 
   useEffect(() => {
     const onScroll = () => {
-      setPos({
-        y: window.scrollY
+      setPos(() => {
+        const newPos = window.scrollY;
+        return newPos;
       });
     };
 
-    const throttled = throttle(onScroll, 50);
+    const throttled = throttle(onScroll, 10);
 
     window.addEventListener("scroll", throttled, { passive: true });
 
@@ -74,6 +67,6 @@ export const ScrollProvider: React.FC<ScrollProviderProps> = ({
 
 // ----- Hook -----
 
-export const useScroll = (): ScrollContextValue => {
+export const useScroll = (): number => {
   return useContext(ScrollContext);
 };

@@ -2,6 +2,7 @@
 import {useEffect, useRef} from 'react'
 import './scrollHijack.css';
 import { evaluateCalc } from '../utils/cssCalc';
+import useResizeObserver from '../hooks/useResizeObserver';
 
 let instanceCounter = 0;
 
@@ -21,27 +22,26 @@ export default function ScrollHijack({ children, scrollPath= "150vh", className 
     const foreground = childrenArray.slice(0, 1);
     const background = childrenArray.slice(1);
 
+    /* Resize Observer */
+    const { observe, unobserve } = useResizeObserver(() => {
+        Setup(); // Recalculate setup on resize
+    });
+
     useEffect(() => {
+        const container = document.getElementById(scrollHijackContainerId) as HTMLElement;
+        observe(container); // Start observing the container
         Setup();
 
-        // Create ResizeObserver to watch for viewport changes
-        const resizeObserver = new ResizeObserver(() => {
-            Setup();
-        });
-
-        // Observe the document body for size changes
-        resizeObserver.observe(document.body);
-
         return () => {
-            resizeObserver.disconnect();
+            unobserve(); // Cleanup observer on unmount
         };
     }, []);
 
     const Setup = () : void => {
         let container : HTMLElement = document.getElementById(scrollHijackContainerId) as HTMLElement;
         let vh100 : number = window.innerHeight;
-        let hijackContent = document.getElementById(scrollHijackForegroundId) as HTMLElement;
-        let childrenHeight : number = hijackContent.scrollHeight;
+        let hijackBackground = document.getElementById(scrollHijackBackgroundId) as HTMLElement;
+        let childrenHeight : number = hijackBackground.scrollHeight;
         
         // changing the incomming scrollPath value to pixels if needed
         const incommingScrollPath : string = evaluateCalc(scrollPath, {
@@ -59,7 +59,6 @@ export default function ScrollHijack({ children, scrollPath= "150vh", className 
         }
 
         // Check if background exists and is larger than scrollPath
-        let hijackBackground = document.getElementById(scrollHijackBackgroundId) as HTMLElement;
         if(hijackBackground){
             let backgroundHeight = hijackBackground.scrollHeight;
             if(backgroundHeight > finalScrollPath){
@@ -68,7 +67,8 @@ export default function ScrollHijack({ children, scrollPath= "150vh", className 
         }
 
         container.style.height = finalScrollPath + "px";
-        hijackContent.style.height = childrenHeight + "px";
+        hijackBackground.style.height = childrenHeight + "px";
+
     }
 
     return (
