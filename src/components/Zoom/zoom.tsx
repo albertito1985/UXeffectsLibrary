@@ -1,10 +1,10 @@
 'use client'
 import {useEffect, useRef} from 'react'
 import './zoom.css';
-import ScrollHijack from './scrollHijack';
-import { evaluateCalc } from '../utils/cssCalc';
-import { useScroll } from './scrollContext';
-import useResizeObserver from '../hooks/useResizeObserver';
+import ScrollHijack from '../ScrollHijack/scrollHijack';
+import { evaluateCalc } from '../../utils/cssCalc';
+import { useScroll } from '../ScrollHijack/scrollContext';
+import useResizeObserver from '../../hooks/useResizeObserver';
 
 let instanceCounter = 0;
 

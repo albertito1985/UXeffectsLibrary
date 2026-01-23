@@ -1,8 +1,8 @@
 'use client'
 import {useEffect, useRef} from 'react'
 import './scrollHijack.css';
-import { evaluateCalc } from '../utils/cssCalc';
-import useResizeObserver from '../hooks/useResizeObserver';
+import { evaluateCalc } from '../../utils/cssCalc';
+import useResizeObserver from '../../hooks/useResizeObserver';
 
 let instanceCounter = 0;
 
