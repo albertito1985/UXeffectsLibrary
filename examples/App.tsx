@@ -1,6 +1,6 @@
-import { ScrollProvider } from '../src/components/ScrollHijack/scrollContext';
-import ScrollHijack from '../src/components/ScrollHijack/scrollHijack';
-import Zoom from '../src/components/Zoom/zoom';
+import { ScrollProvider } from '../src/contexts/scrollContext';
+import ScrollHijack from '../src/components/scrollHijack';
+import Zoom from '../src/components/zoom';
 
 function App() {
   return (

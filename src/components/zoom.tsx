@@ -1,11 +1,11 @@
 'use client'
 import {useEffect, useRef} from 'react'
-import './zoom.css';
-import ScrollHijack from '../ScrollHijack/scrollHijack';
-import { evaluateCalc } from '../../utils/index';
-import { useScroll } from '../ScrollHijack/scrollContext';
-import useResizeObserver from '../../hooks/useResizeObserver';
-import { calculateScrollPercentage, calculateContainerPosition, getStartZoom } from '../../utils/index';
+import '../../styles/zoom.css';
+import ScrollHijack from './scrollHijack';
+import { evaluateCalc } from '../utils/index';
+import { useScroll } from '../contexts/scrollContext';
+import useResizeObserver from '../hooks/useResizeObserver';
+import { calculateScrollPercentage, calculateContainerPosition, getStartZoom } from '../utils/index';
 
 let instanceCounter = 0;
 

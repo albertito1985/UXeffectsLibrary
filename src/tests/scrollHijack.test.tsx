@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import ScrollHijack from './scrollHijack'
+import ScrollHijack from '../components/scrollHijack'
 
 // Mock the cssCalc utility
 vi.mock('../utils/cssCalc', () => ({
