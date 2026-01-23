@@ -5,7 +5,7 @@ import ScrollHijack from '../ScrollHijack/scrollHijack';
 import { evaluateCalc } from '../../utils/index';
 import { useScroll } from '../ScrollHijack/scrollContext';
 import useResizeObserver from '../../hooks/useResizeObserver';
-import { calculateRatio } from '../../utils/index';
+import { calculateScrollPercentage, getStartZoom } from '../../utils/index';
 
 let instanceCounter = 0;
 
@@ -60,7 +60,9 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
       setContainerPositionAndScrollPath();
       
       let p = new Promise<number>((resolve) => {
-        getStartZoom(resolve)
+        // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
+        let div : HTMLElement = document.getElementById(`entireImage-${componentId}`) as HTMLElement;
+        getStartZoom(div, resolve)
       })
       p.then((percentage) => {
         startZoom.current = percentage;
@@ -94,28 +96,12 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
 
     // Track scroll position
     const zoomAnimation = () => {
-        let scrollPercentage : number = calculateScrollPercentage();
+        let scrollPercentage : number = calculateScrollPercentage(scrollPosition, hijackContainerPosition.current, zoomScrollPath.current!);
         let newZoom : number | undefined = calculateZoom(scrollPercentage);
         let opacityValue = Math.max(0, Math.min(100, 100 - scrollPercentage));
         let newOpacity = opacityValue + "%";
         updateZoomAnimation(newZoom, newOpacity);
     };
-
-    // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
-    const getStartZoom = async (resolve: (value: number) => void) => {
-      let div : HTMLElement = document.getElementById(`entireImage-${componentId}`) as HTMLElement;
-      let style : CSSStyleDeclaration = window.getComputedStyle(div);
-      let bg : string = style.backgroundImage.slice(5, -2);
-      
-      let background : HTMLImageElement = new Image();
-      background.src = bg;
-      background.onload = ()=>{ calculateRatio(background, div, resolve); };
-    }
-
-    const calculateScrollPercentage = ()=>{
-      let percentage = ((scrollPosition-hijackContainerPosition.current)*100)/zoomScrollPath.current!;
-      return percentage;
-    }
 
     const updateZoomAnimation = (newZoom:number | undefined,newOpacity:string)=>{
       let entireImage = document.getElementById(`entireImage-${componentId}`) as HTMLElement;

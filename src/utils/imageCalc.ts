@@ -1,3 +1,11 @@
+export const getStartZoom = async (div : HTMLElement, resolve: (value: number) => void) => {
+      let style : CSSStyleDeclaration = window.getComputedStyle(div);
+      let bg : string = style.backgroundImage.slice(5, -2);
+      
+      let background : HTMLImageElement = new Image();
+      background.src = bg;
+      background.onload = ()=>{ calculateRatio(background, div, resolve); };
+    }
 
 export async function calculateRatio(background: HTMLImageElement, div: HTMLElement, resolve: (value: number) => void) {
           let percentage : number | undefined = undefined;
