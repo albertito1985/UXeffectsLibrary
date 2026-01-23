@@ -5,7 +5,7 @@ import ScrollHijack from '../ScrollHijack/scrollHijack';
 import { evaluateCalc } from '../../utils/index';
 import { useScroll } from '../ScrollHijack/scrollContext';
 import useResizeObserver from '../../hooks/useResizeObserver';
-import { calculateScrollPercentage, getStartZoom } from '../../utils/index';
+import { calculateScrollPercentage, calculateContainerPosition, getStartZoom } from '../../utils/index';
 
 let instanceCounter = 0;
 
@@ -82,7 +82,7 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
 
     const setContainerPositionAndScrollPath = ()=>{
       let hijackContainer : HTMLElement = document.getElementsByClassName(componentId)[0] as HTMLElement;
-      hijackContainerPosition.current = hijackContainer.getBoundingClientRect().y+window.scrollY;
+      hijackContainerPosition.current = calculateContainerPosition(hijackContainer);
 
       let container : HTMLElement = document.getElementById(`zoomImages-${componentId}`) as HTMLElement;
       let scrollPathInPixels :string | undefined = evaluateCalc(magnificationPath,{
