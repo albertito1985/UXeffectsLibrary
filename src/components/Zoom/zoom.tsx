@@ -33,7 +33,7 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
 
     /* Resize Observer */
     const { observe, unobserve } = useResizeObserver(() => {
-        setContainerPositionAndScrollPath(); // Recalculate the position and scroll path on resize
+        setContainerPositionAndMagnificationPath(); // Recalculate the position and scroll path on resize
         zoomAnimation(); // Reapply zoom animation on resize
     });
 
@@ -56,8 +56,8 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
       // Adding the images to the background of the divs dynamically for the Zoom effect
       loadImages();
 
-      // Declaring the position of the container and the scrollPath for the zoom effect
-      setContainerPositionAndScrollPath();
+      // Declaring the position of the container and the magnificationPath for the zoom effect
+      setContainerPositionAndMagnificationPath();
       
       let p = new Promise<number>((resolve) => {
         // getStartZoom calculates the initial zoom percentage of the zoomed image based on its dimensions and the container size
@@ -80,7 +80,8 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
       entireImageDiv.style.backgroundImage = `url(${entireImage})`;
     }
 
-    const setContainerPositionAndScrollPath = ()=>{
+    const setContainerPositionAndMagnificationPath = ()=>{
+
       let hijackContainer : HTMLElement = document.getElementsByClassName(componentId)[0] as HTMLElement;
       hijackContainerPosition.current = calculateContainerPosition(hijackContainer);
 
