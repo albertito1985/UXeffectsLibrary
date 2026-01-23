@@ -2,9 +2,10 @@
 import {useEffect, useRef} from 'react'
 import './zoom.css';
 import ScrollHijack from '../ScrollHijack/scrollHijack';
-import { evaluateCalc } from '../../utils/cssCalc';
+import { evaluateCalc } from '../../utils/index';
 import { useScroll } from '../ScrollHijack/scrollContext';
 import useResizeObserver from '../../hooks/useResizeObserver';
+import { calculateRatio } from '../../utils/index';
 
 let instanceCounter = 0;
 
@@ -91,8 +92,6 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
       zoomScrollPath.current = parseInt(scrollPathInPixels?.slice(0, -2) || "0"); // The scroll distance over which the zoom effect occurs
     }
 
-    
-
     // Track scroll position
     const zoomAnimation = () => {
         let scrollPercentage : number = calculateScrollPercentage();
@@ -110,46 +109,7 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
       
       let background : HTMLImageElement = new Image();
       background.src = bg;
-      background.onload = await calculateRatio;
-      
-        function calculateRatio(){
-          let percentage : number | undefined = undefined;
-          
-          if (background.width > background.height) {
-              let ratio : number = background.height / background.width;
-              if (div.offsetWidth > div.offsetHeight) {
-                  let bgW : number = div.offsetWidth;
-                  percentage = 100;
-                  let bgH : number = Math.round(div.offsetWidth * ratio);
-                  if (bgH < div.offsetHeight) {
-                      bgH = div.offsetHeight;
-                      bgW = Math.round(bgH / ratio);
-                      percentage=(100*bgW)/div.offsetWidth;
-                  }
-              } else {
-                  var bgW = Math.round(div.offsetHeight / ratio);
-                  percentage=(100*bgW)/div.offsetWidth;
-                  bgH = div.offsetHeight;
-              }
-          } else {
-              var ratio = background.width / background.height;
-              if (div.offsetHeight > div.offsetWidth) {
-                  var bgH = div.offsetHeight;
-                  percentage=100;
-                  var bgW = Math.round(div.offsetHeight * ratio);
-                  if (bgW > div.offsetWidth) {
-                      bgW = div.offsetWidth;
-                      bgH = Math.round(bgW / ratio);
-                      percentage=(100*bgH)/div.offsetHeight;
-                  }
-              } else {
-                  var bgW = Math.round(div.offsetWidth / ratio);
-                  var bgH = div.offsetWidth;
-                  percentage=100;
-              }
-          }
-          resolve(percentage)
-      }
+      background.onload = ()=>{ calculateRatio(background, div, resolve); };
     }
 
     const calculateScrollPercentage = ()=>{

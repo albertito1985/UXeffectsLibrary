@@ -9,7 +9,6 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-
 }
 
 .contentContainer{
@@ -38,6 +37,7 @@ body {
   background-color:darkgray;
 }
 
-.bodyContainer{
-  width:50vh;
+#root{
+  position:relative;
+  width:100%;
 }

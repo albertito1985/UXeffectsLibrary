@@ -5,7 +5,6 @@ import Zoom from '../src/components/Zoom/zoom';
 function App() {
   return (
     <>
-    <div className="bodyContainer">
       <div className="contentContainer"> Space for scrolling </div>
         <ScrollHijack scrollPath="300vh" >
           <div className="hijackContentExample"> Scroll Hijack Content Example </div>
@@ -16,8 +15,6 @@ function App() {
           </Zoom>
         </ScrollProvider>
       <div className="contentContainer"> Space for scrolling </div>
-    </div>
-    
     </>
   )
 }
