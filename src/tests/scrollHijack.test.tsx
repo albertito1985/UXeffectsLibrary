@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import ScrollHijack from '../components/scrollHijack'
+import ForegroundScrollHijack from '../components/foregroundScrollHijack'
 
 // Mock the cssCalc utility
 vi.mock('../utils/cssCalc', () => ({
@@ -14,7 +14,7 @@ vi.mock('../utils/cssCalc', () => ({
   }),
 }))
 
-describe('ScrollHijack', () => {
+describe('ForegroundScrollHijack', () => {
   beforeEach(() => {
     // Reset DOM
     document.body.innerHTML = ''
@@ -29,9 +29,9 @@ describe('ScrollHijack', () => {
   describe('rendering', () => {
     it('should render children correctly', () => {
       render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div data-testid="test-child">Test Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       expect(screen.getByTestId('test-child')).toBeInTheDocument()
@@ -40,9 +40,9 @@ describe('ScrollHijack', () => {
 
     it('should render with default className', () => {
       const { container } = render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div>Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContainer = container.querySelector('.hijackContainer')
@@ -51,9 +51,9 @@ describe('ScrollHijack', () => {
 
     it('should apply custom className when provided', () => {
       const { container } = render(
-        <ScrollHijack className="custom-class">
+        <ForegroundScrollHijack className="custom-class">
           <div>Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContainer = container.querySelector('.hijackContainer')
@@ -63,9 +63,9 @@ describe('ScrollHijack', () => {
 
     it('should create hijackContent wrapper', () => {
       const { container } = render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div>Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContent = container.querySelector('.hijackContent')
@@ -76,15 +76,15 @@ describe('ScrollHijack', () => {
   describe('unique IDs', () => {
     it('should generate unique IDs for multiple instances', () => {
       const { container: container1 } = render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div>Content 1</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const { container: container2 } = render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div>Content 2</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const id1 = container1.querySelector('.hijackContainer')?.id
@@ -99,9 +99,9 @@ describe('ScrollHijack', () => {
   describe('scrollPath prop', () => {
     it('should use default scrollPath of 150vh', () => {
       const { container } = render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div>Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContainer = container.querySelector('.hijackContainer') as HTMLElement
@@ -114,9 +114,9 @@ describe('ScrollHijack', () => {
 
     it('should accept custom scrollPath', () => {
       const { container } = render(
-        <ScrollHijack scrollPath="200vh">
+        <ForegroundScrollHijack scrollPath="200vh">
           <div>Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContainer = container.querySelector('.hijackContainer')
@@ -125,9 +125,9 @@ describe('ScrollHijack', () => {
 
     it('should accept pixel values for scrollPath', () => {
       const { container } = render(
-        <ScrollHijack scrollPath="1000px">
+        <ForegroundScrollHijack scrollPath="1000px">
           <div>Content</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContainer = container.querySelector('.hijackContainer')
@@ -138,9 +138,9 @@ describe('ScrollHijack', () => {
   describe('structure', () => {
     it('should have correct HTML structure', () => {
       const { container } = render(
-        <ScrollHijack className="test-hijack">
+        <ForegroundScrollHijack className="test-hijack">
           <div data-testid="child">Test Child</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContainer = container.querySelector('.hijackContainer.test-hijack')
@@ -155,11 +155,11 @@ describe('ScrollHijack', () => {
 
     it('should maintain proper parent-child relationships', () => {
       render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div data-testid="parent">
             <div data-testid="child">Nested</div>
           </div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const parent = screen.getByTestId('parent')
@@ -172,11 +172,11 @@ describe('ScrollHijack', () => {
   describe('multiple children', () => {
     it('should render multiple children correctly', () => {
       render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div data-testid="child-1">Child 1</div>
           <div data-testid="child-2">Child 2</div>
           <div data-testid="child-3">Child 3</div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       expect(screen.getByTestId('child-1')).toBeInTheDocument()
@@ -188,9 +188,9 @@ describe('ScrollHijack', () => {
   describe('edge cases', () => {
     it('should handle empty children', () => {
       const { container } = render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <div></div>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       const hijackContent = container.querySelector('.hijackContent')
@@ -199,9 +199,9 @@ describe('ScrollHijack', () => {
 
     it('should handle text-only children', () => {
       render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           Plain text content
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       expect(screen.getByText('Plain text content')).toBeInTheDocument()
@@ -209,12 +209,12 @@ describe('ScrollHijack', () => {
 
     it('should handle React fragments as children', () => {
       render(
-        <ScrollHijack>
+        <ForegroundScrollHijack>
           <>
             <div data-testid="fragment-child-1">Fragment 1</div>
             <div data-testid="fragment-child-2">Fragment 2</div>
           </>
-        </ScrollHijack>
+        </ForegroundScrollHijack>
       )
 
       expect(screen.getByTestId('fragment-child-1')).toBeInTheDocument()

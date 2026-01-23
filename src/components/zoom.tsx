@@ -1,7 +1,7 @@
 'use client'
 import {useEffect, useRef} from 'react'
-import '../../styles/zoom.css';
-import ScrollHijack from './scrollHijack';
+import '../styles/zoom.css';
+import {ForegroundScrollHijack} from './index';
 import { evaluateCalc } from '../utils/index';
 import { useScroll } from '../contexts/scrollContext';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -18,7 +18,7 @@ type ZoomProps = {
     totalPath?:string; // height of the scroll hijack container
 }
 
-export default function Zoom({children, entireImage, maskImage, magnification = 20, magnificationPath = "50vh", totalPath}: ZoomProps) {
+export function Zoom({children, entireImage, maskImage, magnification = 20, magnificationPath = "50vh", totalPath}: ZoomProps) {
     const componentId = useRef<string>(`zoom-instance-${++instanceCounter}`).current;
 
     const scrollPosition : number = useScroll();
@@ -124,7 +124,7 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
     }
 
   return (
-          <ScrollHijack className={componentId} scrollPath={totalPath} >
+          <ForegroundScrollHijack className={componentId} scrollPath={totalPath} >
               <div id={`zoomImages-${componentId}`} className="zoomImages">
                 <div id={`maskImage-${componentId}`} className="maskImage">
                 </div>
@@ -132,6 +132,6 @@ export default function Zoom({children, entireImage, maskImage, magnification = 
                 </div>
               </div>
               {children}
-          </ScrollHijack>
+          </ForegroundScrollHijack>
     )
 }

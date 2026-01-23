@@ -21,8 +21,8 @@ body {
   color:white
 }
 
-.hijackContentExample{
-  height:100%;
+.foregroundHijackContentExample{
+  height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -40,4 +40,23 @@ body {
 #root{
   position:relative;
   width:100%;
+}
+
+.backgroundHijackBackgroundExample{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.backgroundHijackForegroundExample{
+  height:300vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.backgroundHijackForegroundExampleInnerContainer{
+  background-color:lightgray;
+  padding:20px;
 }

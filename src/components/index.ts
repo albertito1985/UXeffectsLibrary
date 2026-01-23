@@ -1,5 +1,3 @@
-// Export all components from this barrel file
-// Example:
-// export { FadeIn } from './FadeIn'
-// export { ScaleIn } from './ScaleIn'
-// export { GlitchEffect } from './GlitchEffect'
+export * from './foregroundScrollHijack';
+export * from './backgroundScrollHijack';
+export * from './zoom';

@@ -1,6 +1,6 @@
 'use client'
 import {useEffect, useRef} from 'react'
-import '../../styles/scrollHijack.css';
+import '../styles/foregroundScrollHijack.css';
 import { evaluateCalc } from '../utils/cssCalc';
 import useResizeObserver from '../hooks/useResizeObserver';
 
@@ -12,11 +12,11 @@ type ScrollHijackProps = {
     className?: string;
 }
 
-export default function ScrollHijack({ children, scrollPath= "150vh", className }: ScrollHijackProps) {
+export function ForegroundScrollHijack({ children, scrollPath= "150vh", className }: ScrollHijackProps) {
 
-    const scrollHijackContainerId = useRef<string>(`scrollHijack-instance-${++instanceCounter}`).current;
-    const scrollHijackForegroundId = useRef<string>(`scrollHijack-instance-${++instanceCounter}-foreground`).current;
-    const scrollHijackBackgroundId = useRef<string>(`scrollHijack-instance-${++instanceCounter}-background`).current;
+    const scrollHijackContainerId = useRef<string>(`foreground-scrollHijack-instance-${++instanceCounter}`).current;
+    const scrollHijackForegroundId = useRef<string>(`foreground-scrollHijack-instance-${++instanceCounter}-foreground`).current;
+    const scrollHijackBackgroundId = useRef<string>(`foreground-scrollHijack-instance-${++instanceCounter}-background`).current;
 
     const childrenArray = Array.isArray(children) ? children : [children];
     const foreground = childrenArray.slice(0, 1);
@@ -65,19 +65,20 @@ export default function ScrollHijack({ children, scrollPath= "150vh", className 
                 finalScrollPath = backgroundHeight;
             }
         }
-
         container.style.height = finalScrollPath + "px";
         hijackBackground.style.height = childrenHeight + "px";
 
+        const hijackForeground = document.getElementById(scrollHijackForegroundId) as HTMLElement;
+        hijackForeground.style.height = hijackForeground.scrollHeight + "px";
     }
 
     return (
-            <div id={scrollHijackContainerId} className={`hijackContainer ${className ? className : ""}`}>
+            <div id={scrollHijackContainerId} className={`foregroundHijackContainer ${className ? className : ""}`}>
                 {background &&
-                <div id={scrollHijackBackgroundId} className="hijackBackground">
+                <div id={scrollHijackBackgroundId} className="foregroundHijackBackground">
                     {background}
                 </div>}
-                <div id={scrollHijackForegroundId} className="hijackForeground">
+                <div id={scrollHijackForegroundId} className="foregroundHijackForeground">
                     {foreground}
                 </div>
             </div>
