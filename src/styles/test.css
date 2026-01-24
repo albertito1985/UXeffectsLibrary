@@ -1,0 +1,22 @@
+.testComponent{
+    height:400%;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    
+    background-image: url('../assets/CoffeeEntire.png');
+    background-position:center;
+    transition: none;
+    animation: appear ease-in-out;
+    animation-timeline: view();
+    animation-range: entry 0% cover 100%;
+}
+
+@keyframes appear {
+    from {background-size:cover;}
+    to {transition: background-size 0.5s ease-in-out;
+        background-size:Calc(cover + 20%);
+        }
+
+}

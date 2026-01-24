@@ -6,17 +6,17 @@ import useResizeObserver from '../hooks/useResizeObserver';
 
 let instanceCounter = 0;
 
-type ScrollHijackProps = {
+type ForegroundScrollHijackProps = {
     children: React.ReactNode;
     scrollPath?: string;
     className?: string;
 }
 
-export function ForegroundScrollHijack({ children, scrollPath= "150vh", className }: ScrollHijackProps) {
-
-    const scrollHijackContainerId = useRef<string>(`foreground-scrollHijack-instance-${++instanceCounter}`).current;
-    const scrollHijackForegroundId = useRef<string>(`foreground-scrollHijack-instance-${++instanceCounter}-foreground`).current;
-    const scrollHijackBackgroundId = useRef<string>(`foreground-scrollHijack-instance-${++instanceCounter}-background`).current;
+export function ForegroundScrollHijack({ children, scrollPath= "150vh", className }: ForegroundScrollHijackProps) {
+    ++instanceCounter;
+    const scrollHijackContainerId = useRef<string>(`foreground-scrollHijack-instance-${instanceCounter}`).current;
+    const scrollHijackForegroundId = useRef<string>(`foreground-scrollHijack-instance-${instanceCounter}-foreground`).current;
+    const scrollHijackBackgroundId = useRef<string>(`foreground-scrollHijack-instance-${instanceCounter}-background`).current;
 
     const childrenArray = Array.isArray(children) ? children : [children];
     const foreground = childrenArray.slice(0, 1);

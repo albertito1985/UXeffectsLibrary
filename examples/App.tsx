@@ -1,10 +1,11 @@
 import { ScrollProvider } from '../src/contexts/scrollContext';
-import {ForegroundScrollHijack, Zoom, BackgroundScrollHijack} from '../src/components/index';
+import {ForegroundScrollHijack, Zoom, BackgroundScrollHijack, BackgroundColorChange} from '../src/components/index';
+import TestComponent from '../src/components/test';
 
 function App() {
   return (
     <>
-      <Spacer/>
+      {/* <Spacer/>
         <BackgroundScrollHijack >
           <div className="backgroundHijackBackgroundExample"> Background Scroll Hijack Content Example </div>
           <div className="backgroundHijackForegroundExample">
@@ -12,7 +13,19 @@ function App() {
               Foreground Scroll Hijack Content Example 
             </div>
           </div>
-        </BackgroundScrollHijack>
+        </BackgroundScrollHijack> */}
+        <div className="littleDiv">
+          <Spacer/>
+            <ScrollProvider>
+                <BackgroundColorChange>
+                </BackgroundColorChange>
+            </ScrollProvider>
+          <Spacer/>
+          <TestComponent/>
+          <Spacer/>
+        </div>
+        
+      
       {/* <Spacer/>
         <ForegroundScrollHijack scrollPath="300vh" >
           <div className="foregroundHijackContentExample"> Foreground Scroll Hijack Content Example </div>
@@ -24,8 +37,6 @@ function App() {
           </Zoom>
         </ScrollProvider>
       <Spacer/> */}
-        
-      <Spacer/>
     </>
   )
 }
